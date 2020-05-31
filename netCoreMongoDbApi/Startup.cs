@@ -9,6 +9,7 @@ using netCoreMongoDbApi.Persistence.Repository;
 using AutoMapper;
 using netCoreMongoDbApi.Services;
 using netCoreMongoDbApi.Domain.Services;
+using Microsoft.OpenApi.Models;
 
 namespace netCoreMongoDbApi
 {
@@ -33,6 +34,14 @@ namespace netCoreMongoDbApi
                 options.Database
                     = Configuration.GetSection("MongoConnection:Database").Value;
             });
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "netCoreMongoDb-templete API",
+                    Version = "v1"
+                });
+            });
             services.AddAutoMapper(typeof(Startup));
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<IStudentService, StudentService>();
@@ -47,6 +56,13 @@ namespace netCoreMongoDbApi
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Supermarket API");
+            });
 
             app.UseRouting();
 
