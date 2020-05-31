@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace netCoreMongoDbApi.Models
+namespace netCoreMongoDbApi.Domain.Models
 {
     public class Student
     {

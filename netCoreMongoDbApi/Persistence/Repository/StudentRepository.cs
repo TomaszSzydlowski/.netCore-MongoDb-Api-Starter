@@ -4,19 +4,18 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using netCoreMongoDbApi.DbModels;
-using netCoreMongoDbApi.IRepository;
-using netCoreMongoDbApi.Models;
+using netCoreMongoDbApi.Domain.IRepository;
+using netCoreMongoDbApi.Domain.Models;
+using netCoreMongoDbApi.Persistence.Contexts;
+using netCoreMongoDbApi.Persistence.Repositories;
 
-namespace netCoreMongoDbApi.Repository
+namespace netCoreMongoDbApi.Persistence.Repository
 {
-    public class StudentRepository : IStudentRepository
+    public class StudentRepository : BaseRepository, IStudentRepository
     {
-        private readonly StudentContext _context = null;
-
-        public StudentRepository(IOptions<Settings> settings)
+        public StudentRepository(IOptions<Settings> settings) : base(settings)
         {
-            _context = new StudentContext(settings);
+
         }
 
         public async Task Add(Student student)

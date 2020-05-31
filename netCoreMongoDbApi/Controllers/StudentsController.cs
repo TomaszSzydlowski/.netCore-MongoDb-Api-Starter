@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using netCoreMongoDbApi.IRepository;
-using netCoreMongoDbApi.Models;
+using netCoreMongoDbApi.Domain.IRepository;
+using netCoreMongoDbApi.Domain.Models;
 
 namespace netCoreMongoDbApi.Controllers
 {

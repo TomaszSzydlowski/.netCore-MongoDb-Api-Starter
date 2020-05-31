@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Driver;
-using netCoreMongoDbApi.Models;
+using netCoreMongoDbApi.Domain.Models;
 
-namespace netCoreMongoDbApi.IRepository
+namespace netCoreMongoDbApi.Domain.IRepository
 {
     public interface IStudentRepository{
         Task<IEnumerable<Student>> GetAll();

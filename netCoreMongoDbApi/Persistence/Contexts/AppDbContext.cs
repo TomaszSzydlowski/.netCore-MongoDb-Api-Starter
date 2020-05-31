@@ -1,14 +1,14 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using netCoreMongoDbApi.Models;
+using netCoreMongoDbApi.Domain.Models;
 
-namespace netCoreMongoDbApi.DbModels
+namespace netCoreMongoDbApi.Persistence.Contexts
 {
-    public class StudentContext
+    public class AppDbContext
     {
         private IMongoDatabase _database = null;
 
-        public StudentContext(IOptions<Settings> settings)
+        public AppDbContext(IOptions<Settings> settings)
         {
             var client = new MongoClient(settings.Value.ConnectionString);
             if (client != null)
