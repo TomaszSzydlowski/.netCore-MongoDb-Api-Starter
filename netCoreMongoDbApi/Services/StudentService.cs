@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using netCoreMongoDbApi.Domain.IRepository;
+using netCoreMongoDbApi.Domain.Repository;
 using netCoreMongoDbApi.Domain.Models;
 using netCoreMongoDbApi.Domain.Services;
 using netCoreMongoDbApi.Domain.Services.Communication;
@@ -10,18 +9,20 @@ namespace netCoreMongoDbApi.Services
 {
     public class StudentService : IStudentService
     {
-        private IStudentRepository _studentRepository;
+        private readonly IStudentRepository _studentRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public StudentService(IStudentRepository studentRepository)
+        public StudentService(IStudentRepository studentRepository, IUnitOfWork unitOfWork)
         {
             _studentRepository = studentRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<StudentResponse> FindAsync(string id)
+        public async Task<StudentResponse> FindAsync(Guid id)
         {
             try
             {
-                var result = await _studentRepository.FindByIdAsync(id);
+                var result = await _studentRepository.GetById(id);
                 return new StudentResponse(result);
             }
             catch (Exception ex)
@@ -45,11 +46,13 @@ namespace netCoreMongoDbApi.Services
             }
         }
 
-        public async Task<StudentResponse> SaveAsync(Student student)
+        public async Task<StudentResponse> AddAsync(Student student)
         {
             try
             {
-                await _studentRepository.AddAsync(student);
+                _studentRepository.Add(student);
+                await _unitOfWork.Commit();
+
                 return new StudentResponse(student);
             }
             catch (Exception ex)
@@ -59,9 +62,9 @@ namespace netCoreMongoDbApi.Services
             }
         }
 
-        public async Task<StudentResponse> UpdateAsync(string id, Student student)
+        public async Task<StudentResponse> UpdateAsync(Student student)
         {
-            var exisitngStudent = await _studentRepository.FindByIdAsync(id);
+            var exisitngStudent = await _studentRepository.GetById(student.Id);
 
             if (exisitngStudent == null)
             {
@@ -70,7 +73,9 @@ namespace netCoreMongoDbApi.Services
 
             try
             {
-                await _studentRepository.UpdateAsync(id, student);
+                _studentRepository.Update(student);
+                await _unitOfWork.Commit();
+
                 return new StudentResponse(student);
             }
             catch (Exception ex)
@@ -80,9 +85,9 @@ namespace netCoreMongoDbApi.Services
             }
         }
 
-        public async Task<StudentResponse> DeleteAsync(string id)
+        public async Task<StudentResponse> DeleteAsync(Guid id)
         {
-            var exisitngStudent = await _studentRepository.FindByIdAsync(id);
+            var exisitngStudent = await _studentRepository.GetById(id);
 
             if (exisitngStudent == null)
             {
@@ -91,7 +96,9 @@ namespace netCoreMongoDbApi.Services
 
             try
             {
-                await _studentRepository.RemoveAsync(id);
+                _studentRepository.Remove(id);
+                await _unitOfWork.Commit();
+
                 return new StudentResponse(exisitngStudent);
             }
             catch (Exception ex)
@@ -100,8 +107,6 @@ namespace netCoreMongoDbApi.Services
                 return new StudentResponse($"An error occurred when removing the student: {ex.Message}");
             }
         }
-
-
 
         public async Task<StudentsResponse> DeleteAllAsync()
         {
@@ -114,7 +119,9 @@ namespace netCoreMongoDbApi.Services
 
             try
             {
-                await _studentRepository.RemoveAllAsnyc();
+                _studentRepository.RemoveAll();
+                await _unitOfWork.Commit();
+
                 return new StudentsResponse(exisitngStudents);
             }
             catch (Exception ex)

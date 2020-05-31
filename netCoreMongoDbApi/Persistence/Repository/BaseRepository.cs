@@ -1,15 +1,69 @@
-using Microsoft.Extensions.Options;
-using netCoreMongoDbApi.Persistence.Contexts;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using netCoreMongoDbApi.Domain.Repository;
+using ServiceStack;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace netCoreMongoDbApi.Persistence.Repositories
 {
-    public abstract class BaseRepository
+    public abstract class BaseRepository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly AppDbContext _context;
+        protected readonly IAppDbContext Context;
+        protected IMongoCollection<TEntity> DbSet;
 
-        protected BaseRepository(IOptions<Settings> settings)
+        protected BaseRepository(IAppDbContext context)
         {
-            _context = new AppDbContext(settings);
+            Context = context;
+        }
+
+        public virtual void Add(TEntity obj)
+        {
+            ConfigDbSet();
+            Context.AddCommand(() => DbSet.InsertOneAsync(obj));
+        }
+
+        private void ConfigDbSet()
+        {
+            DbSet = Context.GetCollection<TEntity>(typeof(TEntity).Name);
+        }
+
+        public virtual async Task<TEntity> GetById(Guid id)
+        {
+            ConfigDbSet();
+            var data = await DbSet.FindAsync(Builders<TEntity>.Filter.Eq("_id", id));
+            return data.SingleOrDefault();
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> ListAsync()
+        {
+            ConfigDbSet();
+            var all = await DbSet.FindAsync(Builders<TEntity>.Filter.Empty);
+            return all.ToList();
+        }
+
+        public virtual void Update(TEntity obj)
+        {
+            ConfigDbSet();
+            Context.AddCommand(() => DbSet.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.GetId()), obj));
+        }
+
+        public virtual void Remove(Guid id)
+        {
+            ConfigDbSet();
+            Context.AddCommand(() => DbSet.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", id)));
+        }
+
+        public void RemoveAll()
+        {
+            ConfigDbSet();
+            Context.AddCommand(() => DbSet.DeleteManyAsync(new BsonDocument()));
+        }
+
+        public void Dispose()
+        {
+            Context?.Dispose();
         }
     }
 }

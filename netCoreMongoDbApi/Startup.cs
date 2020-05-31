@@ -1,15 +1,17 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using netCoreMongoDbApi.Domain.IRepository;
+using netCoreMongoDbApi.Domain.Repository;
 using netCoreMongoDbApi.Persistence.Contexts;
 using netCoreMongoDbApi.Persistence.Repository;
 using AutoMapper;
 using netCoreMongoDbApi.Services;
 using netCoreMongoDbApi.Domain.Services;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace netCoreMongoDbApi
 {
@@ -32,19 +34,31 @@ namespace netCoreMongoDbApi
                 options.ConnectionString
                     = Configuration.GetConnectionString("DefaultConnection");
                 options.Database
-                    = Configuration.GetSection("MongoConnection:Database").Value;
+                    = Configuration.GetSection("MongoSettings:Database").Value;
             });
-            services.AddSwaggerGen(opt =>
+            services.AddSwaggerGen(s =>
             {
-                opt.SwaggerDoc("v1", new OpenApiInfo
+                s.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "netCoreMongoDb-templete API",
-                    Version = "v1"
+                    Version = "v1",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Tomasz Szydlowski",
+                        Url = new Uri("https://github.com/TomaszSzydlowski/.netCoreMongoDbApi-Templete"),
+                        Email = "Tomasz.Piotr.Szydlowski@gmail.com"
+                    },
+                    License = new OpenApiLicense
+                    {
+                        Name = "MIT"
+                    }
                 });
             });
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IAppDbContext, AppDbContext>();
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

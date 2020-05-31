@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using netCoreMongoDbApi.Resources;
 using netCoreMongoDbApi.Domain.Models;
 using netCoreMongoDbApi.Domain.Services;
+using System;
 
 namespace netCoreMongoDbApi.Controllers
 {
@@ -43,7 +44,7 @@ namespace netCoreMongoDbApi.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> FindAsync(string id)
+        public async Task<IActionResult> FindAsync(Guid id)
         {
             var result = await _studentService.FindAsync(id);
 
@@ -61,7 +62,7 @@ namespace netCoreMongoDbApi.Controllers
         public async Task<IActionResult> PostAsync([FromBody] SaveStudentResource resource)
         {
             var student = _mapper.Map<SaveStudentResource, Student>(resource);
-            var result = await _studentService.SaveAsync(student);
+            var result = await _studentService.AddAsync(student);
 
             if (!result.Success)
                 return BadRequest(new ErrorResource(result.Message));
@@ -74,10 +75,11 @@ namespace netCoreMongoDbApi.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(StudentResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] SaveStudentResource resource)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] SaveStudentResource resource)
         {
             var student = _mapper.Map<SaveStudentResource, Student>(resource);
-            var result = await _studentService.UpdateAsync(id, student);
+            student.Id=id;
+            var result = await _studentService.UpdateAsync(student);
 
             if (!result.Success)
                 return BadRequest(new ErrorResource(result.Message));
@@ -90,7 +92,7 @@ namespace netCoreMongoDbApi.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(StudentResource), 200)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> DeleteAsync(string id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
             var result = await _studentService.DeleteAsync(id);
 
