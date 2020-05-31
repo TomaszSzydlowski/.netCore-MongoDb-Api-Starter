@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using netCoreMongoDbApi.Domain.IRepository;
+using netCoreMongoDbApi.Resources;
 using netCoreMongoDbApi.Domain.Models;
+using netCoreMongoDbApi.Domain.Services;
 
 namespace netCoreMongoDbApi.Controllers
 {
@@ -11,52 +13,107 @@ namespace netCoreMongoDbApi.Controllers
     [ApiController]
     public class StudentsController : Controller
     {
-        private readonly IStudentRepository _studentRepository;
+        private readonly IStudentService _studentService;
 
-        public StudentsController(IStudentRepository studentRepository)
+        private readonly IMapper _mapper;
+
+        public StudentsController(IStudentService studentService, IMapper mapper)
         {
-            _studentRepository = studentRepository;
+            _studentService = studentService;
+            _mapper = mapper;
         }
 
+        //GET:api/students
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
-        public async Task<IEnumerable<Student>> GetAllAsync()
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> ListAsync()
         {
-            return await _studentRepository.GetAll();
+            var result = await _studentService.ListAsync();
+
+            if (!result.Success)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentsResource = _mapper.Map<IEnumerable<Student>, IEnumerable<StudentResource>>(result.Students);
+
+            return Ok(studentsResource);
         }
 
-
+        //GET:api/students/id
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(IEnumerable<Student>), 200)]
-        public async Task<IActionResult> GetAsync(string id)
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> FindAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) return BadRequest("Invalid id.");
-            var result = await _studentRepository.Get(id);
-            return Ok(result);
+            var result = await _studentService.FindAsync(id);
+
+            if (!result.Success)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentResource = _mapper.Map<Student, StudentResource>(result.Student);
+            return Ok(studentResource);
         }
 
+        //POST:api/students
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] Student student)
+        [ProducesResponseType(typeof(StudentResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostAsync([FromBody] SaveStudentResource resource)
         {
-            await _studentRepository.Add(student);
-            return Ok();
+            var student = _mapper.Map<SaveStudentResource, Student>(resource);
+            var result = await _studentService.SaveAsync(student);
+
+            if (!result.Success)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentResource = _mapper.Map<Student, StudentResource>(result.Student);
+            return Ok(studentResource);
         }
 
+        // Put: api/students/id
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] Student student)
+        [ProducesResponseType(typeof(StudentResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> UpdateAsync(string id, [FromBody] SaveStudentResource resource)
         {
-            if (string.IsNullOrEmpty(id)) return BadRequest("Invalid id.");
-            await _studentRepository.Update(id, student);
-            return Ok();
+            var student = _mapper.Map<SaveStudentResource, Student>(resource);
+            var result = await _studentService.UpdateAsync(id, student);
+
+            if (!result.Success)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentsResource = _mapper.Map<Student, StudentResource>(result.Student);
+            return Ok(studentsResource);
         }
 
+        // DELETE: api/students/id
         [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(StudentResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            if (string.IsNullOrEmpty(id)) return BadRequest("Invalid id.");
-            await _studentRepository.Remove(id);
-            return Ok();
+            var result = await _studentService.DeleteAsync(id);
+
+            if (!ModelState.IsValid)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentsResource = _mapper.Map<Student, StudentResource>(result.Student);
+            return Ok(studentsResource);
         }
 
+        // DELETE: api/students
+        [HttpDelete]
+        [ProducesResponseType(typeof(StudentResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> DeleteAllAsync()
+        {
+            var result = await _studentService.DeleteAllAsync();
+
+            if (!ModelState.IsValid)
+                return BadRequest(new ErrorResource(result.Message));
+
+            var studentsResource = _mapper.Map<IEnumerable<Student>, IEnumerable<StudentResource>>(result.Students);
+            return Ok(studentsResource);
+        }
     }
 }

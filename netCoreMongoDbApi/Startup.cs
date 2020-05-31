@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using netCoreMongoDbApi.Domain.IRepository;
 using netCoreMongoDbApi.Persistence.Contexts;
 using netCoreMongoDbApi.Persistence.Repository;
+using AutoMapper;
+using netCoreMongoDbApi.Services;
+using netCoreMongoDbApi.Domain.Services;
 
 namespace netCoreMongoDbApi
 {
@@ -30,8 +33,9 @@ namespace netCoreMongoDbApi
                 options.Database
                     = Configuration.GetSection("MongoConnection:Database").Value;
             });
-
-            services.AddTransient<IStudentRepository, StudentRepository>();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IStudentRepository, StudentRepository>();
+            services.AddScoped<IStudentService, StudentService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

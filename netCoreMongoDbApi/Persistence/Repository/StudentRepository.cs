@@ -18,52 +18,36 @@ namespace netCoreMongoDbApi.Persistence.Repository
 
         }
 
-        public async Task Add(Student student)
+        public async Task AddAsync(Student student)
         {
             await _context.Students.InsertOneAsync(student);
         }
 
-        public async Task<IEnumerable<Student>> GetAll()
+        public async Task<IEnumerable<Student>> ListAsync()
         {
-            try
-            {
-                return await _context.Students.Find(_ => true).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                // log or manage the exception
-                throw ex;
-            }
+            return await _context.Students.Find(_ => true).ToListAsync();
         }
 
-        public async Task<Student> Get(string id)
+        public async Task<Student> FindByIdAsync(string id)
         {
-            try
-            {
-                var student = Builders<Student>.Filter.Eq("Id", id);
-                return await _context.Students.Find(student).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                // log or manage the exception
-                throw ex;
-            }
+            var student = Builders<Student>.Filter.Eq("Id", id);
+            return await _context.Students.Find(student).FirstOrDefaultAsync();
         }
 
-        public async Task<DeleteResult> Remove(string id)
+        public async Task RemoveAsync(string id)
         {
-            return await _context.Students.DeleteOneAsync(Builders<Student>.Filter.Eq("Id", id));
+            await _context.Students.DeleteOneAsync(Builders<Student>.Filter.Eq("Id", id));
         }
 
-        public async Task<DeleteResult> RemoveAll()
+        public async Task RemoveAllAsnyc()
         {
-            return await _context.Students.DeleteManyAsync(new BsonDocument());
+            await _context.Students.DeleteManyAsync(new BsonDocument());
         }
 
-        public async Task<string> Update(string id, Student student)
+        public async Task UpdateAsync(string id, Student student)
         {
+            student.Id=id;
             await _context.Students.ReplaceOneAsync(s => s.Id == id, student);
-            return "";
         }
     }
 }

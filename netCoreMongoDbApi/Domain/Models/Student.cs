@@ -7,8 +7,10 @@ namespace netCoreMongoDbApi.Domain.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id{get;set;}
+        public string Id { get; set; }
         public string Name { get; set; }
-        public string Roll { get; set; }
+        public int IndexNumber { get; set; }
+        public ESemester Semester { get; set; }
+
     }
 }
