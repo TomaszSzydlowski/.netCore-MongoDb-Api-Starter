@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using netCoreMongoDbApi.Domain.Repository;
+using netCoreMongoDbApi.Domain.Repositories;
 
 namespace netCoreMongoDbApi.Persistence.Repository
 {

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using netCoreMongoDbApi.Domain.Repository;
+using netCoreMongoDbApi.Domain.Repositories;
 using netCoreMongoDbApi.Domain.Models;
 using netCoreMongoDbApi.Domain.Services;
 using netCoreMongoDbApi.Domain.Services.Communication;
