@@ -12,7 +12,11 @@ using netCoreMongoDbApi.Services;
 using netCoreMongoDbApi.Domain.Services;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Text;
 using netCoreMongoDbApi.Persistence.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using netCoreMongoDbApi.Controllers.Config;
 
 namespace netCoreMongoDbApi
 {
@@ -28,7 +32,11 @@ namespace netCoreMongoDbApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+            .ConfigureApiBehaviorOptions(option =>
+            {
+                option.InvalidModelStateResponseFactory = InvalidModelStateResponseFactory.ProduceErrorResponse;
+            });
             services.AddMvc();
             services.Configure<Settings>(options =>
             {
@@ -62,6 +70,18 @@ namespace netCoreMongoDbApi
             services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,7 +98,7 @@ namespace netCoreMongoDbApi
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Supermarket API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Students Demo Templete");
             });
 
             app.UseRouting();
