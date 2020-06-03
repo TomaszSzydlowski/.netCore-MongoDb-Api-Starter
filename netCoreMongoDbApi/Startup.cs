@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using netCoreMongoDbApi.Domain.Repository;
+using netCoreMongoDbApi.Domain.Repositories;
 using netCoreMongoDbApi.Persistence.Contexts;
 using netCoreMongoDbApi.Persistence.Repository;
 using AutoMapper;
@@ -12,6 +12,7 @@ using netCoreMongoDbApi.Services;
 using netCoreMongoDbApi.Domain.Services;
 using Microsoft.OpenApi.Models;
 using System;
+using netCoreMongoDbApi.Persistence.Repositories;
 
 namespace netCoreMongoDbApi
 {
@@ -58,6 +59,8 @@ namespace netCoreMongoDbApi
             services.AddScoped<IAppDbContext, AppDbContext>();
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 

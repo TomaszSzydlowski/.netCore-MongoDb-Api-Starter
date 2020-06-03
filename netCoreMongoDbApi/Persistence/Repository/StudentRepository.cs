@@ -1,4 +1,4 @@
-using netCoreMongoDbApi.Domain.Repository;
+using netCoreMongoDbApi.Domain.Repositories;
 using netCoreMongoDbApi.Domain.Models;
 using netCoreMongoDbApi.Persistence.Repositories;
 

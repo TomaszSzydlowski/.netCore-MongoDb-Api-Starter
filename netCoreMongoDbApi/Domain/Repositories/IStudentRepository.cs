@@ -1,7 +1,7 @@
 
 using netCoreMongoDbApi.Domain.Models;
 
-namespace netCoreMongoDbApi.Domain.Repository
+namespace netCoreMongoDbApi.Domain.Repositories
 {
     public interface IStudentRepository:IRepository<Student>
     {

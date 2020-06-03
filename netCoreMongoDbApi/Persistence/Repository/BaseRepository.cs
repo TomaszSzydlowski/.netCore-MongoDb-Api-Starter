@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using netCoreMongoDbApi.Domain.Repository;
+using netCoreMongoDbApi.Domain.Repositories;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,13 @@ namespace netCoreMongoDbApi.Persistence.Repositories
         {
             ConfigDbSet();
             var data = await DbSet.FindAsync(Builders<TEntity>.Filter.Eq("_id", id));
+            return data.SingleOrDefault();
+        }
+
+        public virtual async Task<TEntity> GetByPropertyName(string propertyName, string value)
+        {
+            ConfigDbSet();
+            var data = await DbSet.FindAsync(Builders<TEntity>.Filter.Eq(propertyName, value));
             return data.SingleOrDefault();
         }
 
