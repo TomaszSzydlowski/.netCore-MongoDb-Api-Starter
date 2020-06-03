@@ -3,3 +3,6 @@ CRUD Operation using MongoDB and ASP.NET Core 3.1 with Unit Of Work Pattern and 
 
 Command to run api:
 dotnet run
+
+You can check api:
+https://netcoremongodbapi-templete.azurewebsites.net/swagger/index.html
