@@ -1,4 +1,4 @@
-# .netCore3.1-MongoDb-Api-Templete
+# .netCore3.1-MongoDb-Api-Starter
 CRUD Operation using MongoDB and ASP.NET Core 3.1 with Unit Of Work Pattern and Repository Pattern.
 
 ## How to start?
