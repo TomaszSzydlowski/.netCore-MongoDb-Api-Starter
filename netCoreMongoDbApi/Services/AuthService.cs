@@ -57,7 +57,7 @@ namespace netCoreMongoDbApi.Services
             }
             catch (Exception ex)
             {
-                return new LoginUserResponse($"An error occurred when saving the product: {ex.Message}");
+                return new LoginUserResponse($"An error occurred when loging the user: {ex.Message}");
             }
 
         }

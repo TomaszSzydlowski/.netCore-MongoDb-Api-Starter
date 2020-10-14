@@ -8,13 +8,15 @@ namespace netCoreMongoDbApi.Persistence.Repositories
 {
     public class AuthRepository : BaseRepository<User>, IAuthRepository
     {
+        private readonly string Email = "Email";
+        protected override string _collectionName { get { return "users"; } }
         public AuthRepository(IAppDbContext context) : base(context)
         {
         }
 
         public async Task<User> Login(string email, string password)
         {
-            var user = await GetByPropertyName("Email", email);
+            var user = await GetByPropertyName(Email, email);
             if (user == null)
                 return null; // User does not exist.
 

@@ -6,7 +6,7 @@ namespace netCoreMongoDbApi.Domain.Models
 {
     public class Student
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public int IndexNumber { get; set; }
         public ESemester Semester { get; set; }

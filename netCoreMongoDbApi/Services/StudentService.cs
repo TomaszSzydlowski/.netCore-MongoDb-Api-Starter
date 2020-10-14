@@ -18,7 +18,7 @@ namespace netCoreMongoDbApi.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<StudentResponse> FindAsync(Guid id)
+        public async Task<StudentResponse> FindAsync(int id)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace netCoreMongoDbApi.Services
             }
         }
 
-        public async Task<StudentResponse> DeleteAsync(Guid id)
+        public async Task<StudentResponse> DeleteAsync(int id)
         {
             var exisitngStudent = await _studentRepository.GetById(id);
 
